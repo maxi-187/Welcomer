@@ -18,7 +18,7 @@ Simple Discord.js welcome/leaver bot.
 1. Clone the repository:
    git clone https://github.com/maxi-187/Welcomer.git
 2. Change into the project folder:
-   cd <Welcomer>
+   cd Welcomer
 3. Install dependencies:
    npm install
 
