@@ -1,50 +1,80 @@
-# WelcomeBot
+# Welcomer
 
-Simple Discord.js welcome/leaver bot.
+A simple Discord bot built with [discord.js](https://discord.js.org) that posts an embed when a member joins or leaves your server.
 
 ## Requirements
 
 - Node.js 18 or newer
-- A Discord application and bot token
+- A Discord application with a bot token
 
-## Install
+## Installation
 
-1. Open a terminal in this folder.
-2. Install dependencies:
-   npm install
+```bash
+git clone https://github.com/maxi-187/Welcomer.git
+cd Welcomer
+npm install
+```
 
-## Install from GitHub
+## Create the Bot
 
-1. Clone the repository:
-   git clone https://github.com/maxi-187/Welcomer.git
-2. Change into the project folder:
-   cd Welcomer
-3. Install dependencies:
-   npm install
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications) and create a new application.
+2. Open the **Bot** tab and add a bot.
+3. Click **Reset Token** and copy the token. Keep it secret.
+4. Under **Privileged Gateway Intents**, enable **SERVER MEMBERS INTENT**. Without it, join and leave events are not received.
 
-## Setup
+## Invite the Bot
 
-1. Open `index.js`.
-2. Replace `Your-Bot-Token` with your bot token.
-3. Replace `ChannelID` with the ID of the welcome/leave channel.
+1. Open **OAuth2 → URL Generator**.
+2. Select the scope `bot`.
+3. Select the permissions **View Channel** and **Send Messages**.
+4. Open the generated URL and add the bot to your server.
 
-## Get a Bot Token
+## Configuration
 
-1. Visit https://discord.com/developers/applications
-2. Create a new application.
-3. Go to the Bot tab and add a bot.
-4. Copy the token and paste it into `index.js`.
-5. Under "Privileged Gateway Intents", enable:
-   - SERVER MEMBERS INTENT
-   - MESSAGE CONTENT INTENT (if needed)
+### Token (`.env`)
 
-## Run the Bot
+Create a `.env` file in the project folder (you can copy `.env.example`) and paste your token:
 
-1. Start the bot:
-   node index.js
-2. Watch the console for `Logged in as ...!`.
+```
+TOKEN=your_bot_token_here
+```
 
-## Notes
+`.env` is listed in `.gitignore`, so your token is not committed. Never share it. If it leaks, reset it in the Developer Portal.
 
-- Make sure the bot has permission to view and send messages in the configured channel.
-- Use the Guild Member events only on servers where the bot is present.
+### Settings (`config.json`)
+
+| Key | Description |
+| --- | --- |
+| `WelcomeChannelID` | Channel where welcome messages are sent |
+| `LeaveChannelID` | Channel where leave messages are sent (can be the same channel) |
+| `FooterText` | Text shown in the embed footer |
+| `EmbedColor` | Embed color, either a name like `"Orange"` or a hex value like `"#FF8800"` |
+
+**How to get a channel ID:** In Discord, enable *User Settings → Advanced → Developer Mode*, then right-click a channel and choose **Copy Channel ID**.
+
+## Run
+
+```bash
+npm start
+```
+
+The console should print `Logged in as ...!`.
+
+## Customize Messages
+
+Edit the `.setDescription(...)` calls in `index.js`. Use backticks so the username placeholder is replaced:
+
+```js
+// Welcome message (guildMemberAdd)
+.setDescription(`Welcome, ${member.user.username}! We're glad to have you here!`)
+
+// Leave message (guildMemberRemove)
+.setDescription(`Goodbye, ${member.user.username}! We'll miss you!`)
+```
+
+## Troubleshooting
+
+- **`Missing TOKEN`:** Create the `.env` file as described above.
+- **`Used disallowed intents`:** Enable SERVER MEMBERS INTENT in the Developer Portal.
+- **No messages appear:** Check the channel IDs and make sure the bot can view and send messages in those channels.
+- **Bot is online but nothing happens on join:** Make sure the bot was invited to the server and that the intent is enabled.

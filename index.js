@@ -1,54 +1,55 @@
+require("dotenv").config();
+
 const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
+const config = require("./config.json");
+
+if (!process.env.TOKEN) {
+  console.error("Missing TOKEN. Create a .env file with TOKEN=your_bot_token");
+  process.exit(1);
+}
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMembers,
-  ],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 });
-
-const TOKEN = "Your-Bot-Token"; // Your Bot Token
 
 client.on("clientReady", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
 client.on("guildMemberAdd", async (member) => {
-  const channel = member.guild.channels.cache.get("ChannelID"); // Welcome-ID Channel
+  const channel = member.guild.channels.cache.get(config.WelcomeChannelID);
   if (!channel) return;
 
   const embed = new EmbedBuilder()
     .setAuthor({
       name: member.user.username,
-      iconURL: member.user.displayAvatarURL({ dynamic: true }),
+      iconURL: member.user.displayAvatarURL(),
     })
     .setDescription(
-      `\nHey <@${member.user.id}>, welcome to **${member.guild.name}**!`,
+      `Welcome, ${member.user.username}! We're glad to have you here!`,
     )
-    .setColor(`Orange`)
-    .setFooter({ text: `Welcomer` })
-    .setTimestamp(Date.now());
+    .setColor(config.EmbedColor)
+    .setFooter({ text: config.FooterText })
+    .setTimestamp();
 
   channel.send({ embeds: [embed] });
 });
 
 client.on("guildMemberRemove", async (member) => {
-  const channel = member.guild.channels.cache.get("ChannelID"); // Leave-ID Channel
+  const channel = member.guild.channels.cache.get(config.LeaveChannelID);
   if (!channel) return;
 
   const embed = new EmbedBuilder()
     .setAuthor({
       name: member.user.username,
-      iconURL: member.user.displayAvatarURL({ dynamic: true }),
+      iconURL: member.user.displayAvatarURL(),
     })
-    .setDescription(`\n<@${member.user.id}> has left **${member.guild.name}**.`)
-    .setColor(`Orange`)
-    .setFooter({ text: `Leaver` })
-    .setTimestamp(Date.now());
+    .setDescription(`Goodbye, ${member.user.username}! We'll miss you!`)
+    .setColor(config.EmbedColor)
+    .setFooter({ text: config.FooterText })
+    .setTimestamp();
 
   channel.send({ embeds: [embed] });
 });
 
-client.login(TOKEN);
+client.login(process.env.TOKEN);
